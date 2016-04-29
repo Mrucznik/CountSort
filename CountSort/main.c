@@ -2,31 +2,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 10
-
+#define N 100
 /*
-	Aby zastosowaæ implementacje algorytmu zgodn¹ z pseudokodem z wyk³adu pozostaw pole MY zakomentowane.
+	MY == 1 - moja implementacja sortowania przez zliczanie.
+	MY != 1 - implementacja sortowania przez zliczanie zgodna z pseudokodem z wyk³adu.
+	Z doœwiadczeñ wynika, ¿e moja wersja jest szybsza, ale nie jest stabilna.
 */
-//#define MY
-#if defined MY
+#define MY 0
+#if MY == 1
 	#define CountSort(__A, __B, __N, __FROM, __TO) myCountSort(__A, __B, __N, __FROM, __TO)
 #else
 	#define CountSort(__A, __B, __N, __FROM, __TO) wykladCountSort(__A, __B, __N, __FROM, __TO)
 #endif
 
-const int Niter = 100000;
-
-//Losowanie liczb wiekszych niz 0x7FFF
+//Losowanie liczb 2x wiekszych niz 0x7FFF
 unsigned long long llrand()
 {
-	unsigned long long r = 0;
+	int r = 0;
 
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < 2; ++i)
 	{
 		r = (r << 15) | (rand() & 0x7FFF);
 	}
 
-	return r & 0xFFFFFFFFFFFFFFFFULL;
+	return r;
 }
 
 void arrayRandomFill(int tab[], int n, int from, int to)
@@ -82,37 +81,43 @@ void wykladCountSort(int A[], int B[], int iloscElementow, int from, int to)
 	free(C);
 }
 
+double czasWykonaniaSortowania(int tab[], int iloscElementow, int zakresOd, int zakresDo,  int Niter)
+{
+	int *tabout = (int*)malloc(sizeof(int)*iloscElementow);
+	if (tabout == NULL) return -1;
+
+	double time = clock();
+	for (int i = 0; i < Niter; i++)
+	{
+		CountSort(tab, tabout, iloscElementow, zakresOd, zakresDo);
+	}
+	time = (clock() - time) / CLOCKS_PER_SEC;
+
+	free(tabout);
+	return time;
+}
+
 int main()
 {
 	srand(time(NULL));
-	int A[N], B[N], Aout[N], Bout[N];
+	int A[N], B[N];
 
 	arrayRandomFill(A, N, 1, 64000);
 	arrayRandomFill(B, N, 1, 128);
 
-#if defined MY
+#if MY == 1
 	puts("Zastosowano wlasna implementacje algorytmu sortowania przez zliczanie");
 #else
 	puts("Zastosowano implementacje algorytmu sortowania przez zliczanie zgodna z pseudokodem z wykladu");
 #endif
 
-	//SORTOWANIE TABLICY A
-	printf("Testowanie dla tablicy A:\n");
-	double time = clock();
-	for (int i = 0; i < Niter; i++)
-	{
-		CountSort(A, Aout, N, 1, 64000);
-	}
-	printf("Czas sortowania %d razy tablicy A: %lf\n", Niter, (clock() - time) / CLOCKS_PER_SEC);
+	int Niter = 100000;
+	double time = czasWykonaniaSortowania(A, N, 1, 64000, Niter);
+	printf("Czas sortowania %d razy tablicy A: %lf\n", Niter, time);
 
-	//SORTOWANIE TABLICY B
-	printf("\nTestowanie dla tablicy B:\n");
-	time = clock();
-	for (int i = 0; i < Niter; i++)
-	{
-		CountSort(B, Bout, N, 1, 64000);
-	}
-	printf("Czas sortowania %d razy tablicy B: %lf\n", Niter, (clock() - time) / CLOCKS_PER_SEC);
+	Niter = 10000000;
+	time = czasWykonaniaSortowania(B, N, 1, 128, Niter);
+	printf("Czas sortowania %d razy tablicy B: %lf\n", Niter, time);
 
 	printf("Nacisnij enter aby kontynuowac");
 	getchar();
