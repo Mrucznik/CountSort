@@ -17,31 +17,16 @@
 const int Niter = 100000;
 
 //Losowanie liczb wiekszych niz 0x7FFF
-unsigned long long llrand() {
+unsigned long long llrand()
+{
 	unsigned long long r = 0;
 
-	for (int i = 0; i < 5; ++i) {
+	for (int i = 0; i < 5; ++i)
+	{
 		r = (r << 15) | (rand() & 0x7FFF);
 	}
 
 	return r & 0xFFFFFFFFFFFFFFFFULL;
-}
-
-void printArray(int tab[], int n)
-{
-	for (int i = 0; i < n; i++)
-		printf("%d\n", tab[i]);
-}
-
-void arrayFill(int tab[], int n, int value)
-{
-	for (int i = 0; i < n; i++)
-		tab[i] = value;
-}
-
-void arrayClear(int tab[], int n)
-{
-	arrayFill(tab, n, 0);
 }
 
 void arrayRandomFill(int tab[], int n, int from, int to)
@@ -61,7 +46,7 @@ void myCountSort(int A[], int B[], int iloscElementow, int from, int to)
 
 	for (int i = 0; i < iloscElementow; i++)
 	{
-		C[A[i]-from]++;
+		C[A[i] - from]++;
 	}
 
 	int idx = 0;
@@ -69,7 +54,7 @@ void myCountSort(int A[], int B[], int iloscElementow, int from, int to)
 	{
 		for (int j = 0; j < C[i]; j++)
 		{
-			B[idx] = from+i;
+			B[idx] = from + i;
 			idx++;
 		}
 	}
@@ -87,9 +72,9 @@ void wykladCountSort(int A[], int B[], int iloscElementow, int from, int to)
 		C[A[i] - from]++;
 
 	for (int i = 1; i < rozpietoscElementow; i++)
-		 C[i] += C[i - 1];
+		C[i] += C[i - 1];
 
-	for (int i = iloscElementow-1; i >= 0; i--)
+	for (int i = iloscElementow - 1; i >= 0; i--)
 	{
 		int eidx = A[i] - from;
 		B[--C[eidx]] = eidx;
@@ -110,7 +95,7 @@ int main()
 #else
 	puts("Zastosowano implementacje algorytmu sortowania przez zliczanie zgodna z pseudokodem z wykladu");
 #endif
-	
+
 	//SORTOWANIE TABLICY A
 	printf("Testowanie dla tablicy A:\n");
 	double time = clock();
@@ -133,3 +118,4 @@ int main()
 	getchar();
 	return 0;
 }
+
