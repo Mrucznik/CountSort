@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #define N 100
+
 /*
 	MY == 1 - moja implementacja sortowania przez zliczanie.
 	MY != 1 - implementacja sortowania przez zliczanie zgodna z pseudokodem z wyk³adu.
@@ -16,23 +17,26 @@
 #endif
 
 //Losowanie liczb 2x wiekszych niz 0x7FFF
-unsigned long long llrand()
+int myrand()
 {
 	int r = 0;
-
 	for (int i = 0; i < 2; ++i)
-	{
 		r = (r << 15) | (rand() & 0x7FFF);
-	}
-
 	return r;
 }
 
 void arrayRandomFill(int tab[], int n, int from, int to)
 {
 	for (int i = 0; i < n; i++)
+		tab[i] = (myrand() % (to - from + 1)) + from;
+}
+
+void errorcheck(int warunek, const char* wiadomosc)
+{
+	if (warunek)
 	{
-		tab[i] = (llrand() % (to - from + 1)) + from;
+		puts(wiadomosc);
+		exit(1);
 	}
 }
 
@@ -41,20 +45,17 @@ void myCountSort(int A[], int B[], int iloscElementow, int from, int to)
 {
 	int rozpietoscElementow = to - from + 1;
 	int* C = (int*)calloc(rozpietoscElementow, sizeof(int));
-	if (C == NULL) return;
+	errorcheck(C == NULL, "Brak pamieci!");
 
 	for (int i = 0; i < iloscElementow; i++)
-	{
 		C[A[i] - from]++;
-	}
 
 	int idx = 0;
 	for (int i = 0; i < rozpietoscElementow; i++)
 	{
 		for (int j = 0; j < C[i]; j++)
 		{
-			B[idx] = from + i;
-			idx++;
+			B[idx++] = from + i;
 		}
 	}
 	free(C);
@@ -65,7 +66,7 @@ void wykladCountSort(int A[], int B[], int iloscElementow, int from, int to)
 {
 	int rozpietoscElementow = to - from + 1;
 	int* C = (int*)calloc(rozpietoscElementow, sizeof(int));
-	if (C == NULL) return;
+	errorcheck(C == NULL, "Brak pamieci!");
 
 	for (int i = 0; i < iloscElementow; i++)
 		C[A[i] - from]++;
@@ -81,10 +82,10 @@ void wykladCountSort(int A[], int B[], int iloscElementow, int from, int to)
 	free(C);
 }
 
-double czasWykonaniaSortowania(int tab[], int iloscElementow, int zakresOd, int zakresDo,  int Niter)
+double czasWykonaniaSortowania(int tab[], int iloscElementow, int zakresOd, int zakresDo, int Niter)
 {
-	int *tabout = (int*)malloc(sizeof(int)*iloscElementow);
-	if (tabout == NULL) return -1;
+	int* tabout = (int*)malloc(sizeof(int) * iloscElementow);
+	errorcheck(tabout == NULL, "Brak pamieci!");
 
 	double time = clock();
 	for (int i = 0; i < Niter; i++)
@@ -101,7 +102,6 @@ int main()
 {
 	srand(time(NULL));
 	int A[N], B[N];
-
 	arrayRandomFill(A, N, 1, 64000);
 	arrayRandomFill(B, N, 1, 128);
 
